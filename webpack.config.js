@@ -1,5 +1,10 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import path, { dirname } from "path";
+import { fileURLToPath } from 'url';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const config = {
   mode: "development",
@@ -67,6 +72,6 @@ const config = {
   }
 };
 
-module.exports = config;
+export default config;
 
 

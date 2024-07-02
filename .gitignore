@@ -3,3 +3,5 @@ node_modules
 .env
 build/
 DS_Store
+
+# git rm --cached <filename> (i.e. '.env') OR git rm -r --cached <foldername> (i.e. '.vscode/')

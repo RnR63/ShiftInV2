@@ -1,16 +1,17 @@
 {
-  "name": "shiftin",
-  "version": "1.0.0",
+  "name": "shiftinv2",
+  "version": "2.0.0",
   "description": "Scratch Project",
   "main": "webpack.config.js",
+  "type": "module",
   "scripts": {
     "clean": "rm build/bundle.js",
-    "start": "NODE_ENV=production nodemon server/server.js",
+    "start": "NODE_ENV=production nodemon server/index.js",
     "build": "webpack",
-    "dev": "concurrently \"cross-env NODE_ENV=development webpack serve --open\" \"cross-env NODE_ENV=development nodemon server/server.js \"",
+    "dev": "concurrently \"cross-env NODE_ENV=development webpack serve --open\" \"cross-env NODE_ENV=development nodemon server/index.js \"",
     "test": "jest"
   },
-  "author": "Co-authored-by: RoderickXii <roderickx.deleon@gmail.com>, Co-authored-by: julesdmai <julesdmai@gmail.com>, Co-authored-by: kravchuknick <kravchuknick@gmail.com>, Co-authored-by: robsinz <robsin@gmail.com>",
+  "author": "Co-authored-by: RoderickXii <roderickx.deleon@gmail.com>, Co-authored-by: kravchuknick <kravchuknick@gmail.com>, Co-authored-by: robsinz <robsin@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -41,6 +42,7 @@
     "recharts": "^2.12.0",
     "style-loader": "^3.3.4",
     "styled-components": "^6.1.8",
+    "url": "^0.11.3",
     "url-loader": "^4.1.1",
     "webpack": "^5.90.2",
     "webpack-cli": "^5.1.4"
