@@ -2,7 +2,16 @@ import { Router } from 'express';
 const router = Router();
 
 
+/**
+ 
+ Type of Routers:
 
+ - register - create account
+ - login - validate account, update, delete
+ - shifts (employee) - get shifts, request pickup, request drop, cancel request, (request swap)
+ - shifts (manager) - create shifts, get all/specific shifts, get requests,  update shift, approve request, deny request
+ 
+ */
 
 
 export default router;

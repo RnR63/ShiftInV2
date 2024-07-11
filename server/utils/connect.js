@@ -9,7 +9,7 @@ export const pool = new pg.Pool({
 async function dbConnect() {
     try {
         const res = await pool.query('SELECT NOW ()');
-        console.log('Connected to that shit @ ', res.rows[0].now);
+        if(res) console.log('Connected to that shit @ ', res.rows[0].now);
     } catch (error) {
         console.log('Failed to connect to that shit', error);
     }
