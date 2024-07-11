@@ -4,7 +4,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import path, { dirname } from "path";
 import { fileURLToPath } from 'url';
-import router from "../routes/router.js";
+import { loginRouter } from "../routes/loginRouter.js";
+import { registerRouter } from "../routes/registerRouter.js";
+import { shiftRouter } from '../routes/shiftRouter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,9 +44,9 @@ function createServer() {
   // });
 
   // ----- listening for any endpoints to server to router -------
-  app.use('/api', router);
-  app.use('/login', router);
-  app.use('/register', router);
+  app.use('/shifts', shiftRouter);
+  app.use('/login', loginRouter);
+  app.use('/register', registerRouter);
 
   // After all routes, catch all
   app.get('*', (req, res) => {

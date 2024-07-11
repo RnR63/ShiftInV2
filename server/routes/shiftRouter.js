@@ -1,7 +1,10 @@
 import { Router } from 'express';
 const router = Router();
+import { employeeRouter } from './employeeRouter.js';
+import { adminRouter } from './adminRouter.js';
 
-
+router.use('/admin', adminRouter);
+router.use('/employee', employeeRouter);
 /**
  
  Type of Routers:
@@ -14,7 +17,7 @@ const router = Router();
  */
 
 
-export default router;
+export { router as shiftRouter };
 
 // // need get router to get shifts array and send back to the front end
 // app.get('/shifts', tokenController.authenticateToken, shiftController.getShifts, (req, res) => {

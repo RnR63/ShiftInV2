@@ -1,137 +1,117 @@
-// Import jwt, possible express and cookie parser
-// const jwt = require ('jsonwebtoken');
-// const cookieParser = require('cookie-parser');
-// Import jwt, possible express and cookie parser
-// const jwt = require ('jsonwebtoken');
-// const cookieParser = require('cookie-parser');
-const User = require('../models/userModel.js');
+import { pool } from '../utils/connect.js';
+import bcrypt from 'bcrypt';
+const saltRounds = 10;
 
-const userController = {};
+export const userController = {};
 
-// Token values
-// Create a user
-userController.createUser = async (req, res, next) => {
-    console.log('POST request to /register')
-    console.log('req.body contains: ', req.body);
-
-    // Destructure the properties off the object (req.body) from the form
-    // Took out position
-    const { firstName, lastName, username, password } = req.body;
-
-    //saving money here $$$$
-    if (!firstName || !lastName || !username || !password) {
-        return next({
-            log: 'missing user registration parameters',
-            message: {err: 'Error occurred in userController.createUser.'},
-            status: 400,
-        });
-    }
-
-    // Creating user and storing into mongoDB
+/**
+ * Admin creates employee or another admin account
+ */
+userController.createEmployee = async (req, res, next) => { 
+    const { username, email, password, firstName, lastName, employee_number, position } = req.body;
+    if (!username || !email || !password || !firstName || !lastName || !employee_number || !position) {
+        return res.status(400).json({ message: 'Please provide all required fields' });
+      }
     try {
-        console.log('checking for unique username');
-        console.log('querying database...')
-        console.log('checking for unique username');
-        console.log('querying database...')
-        const uniqueUsername = await User.findOne({username: username});
+       
+        // const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        console.log('uniqueUsername is: ', uniqueUsername);
-        console.log('if null, then username does not exist in database');
-
-        console.log('uniqueUsername is: ', uniqueUsername);
-        console.log('if null, then username does not exist in database');
-
-        if (uniqueUsername !== null) {
-            console.log('username already exists');
-            return next({
-                log: 'userController.createUser error. Username already exists.',
-                status: 400,
-                message: { err: 'username already exists'}
-            });
-        } 
-
-        // query the database
-        const userInformation = await User.create({ 
-            firstName: firstName, 
-            lastName: lastName, 
-            username: username, 
-            password: password,
-        });
-        console.log('user created and stored in database');
-        // console.log("userInformation is: ", userInformation)
-        console.log('user created and stored in database');
-        // console.log("userInformation is: ", userInformation)
-
-        // persist the data
-        res.locals.user = userInformation;
-        console.log('storing user information on res.locals.user: ', res.locals.user);
-
-        // testing
-        console.log('user has been created: ', userInformation.username);
-
-        // return next
-        console.log('exiting userController.createUser');
-        return next();
-
-    } catch (err) {
-        return next({
-            log: `userController.createUser: ERROR ${err}`,
-            status: 400,
-            message: {err: 'Error occurred in controller.createUser. Check server logs for more details.'}
-        });
-    }
-}
-
-// Verify a user
-userController.verifyUser = async (req, res, next) => {
-    console.log('POST request to /login')
-    console.log('req.body contains: ', req.body);
-
-    // Destructure from req.body
-    const { username, password } = req.body;
-    console.log(`${username} attempting to login`);
-    
-    //input error check aka: save money $$$
-    if (!username || !password) {
-        return next({
-            log: 'missing user login parameters',
-            message: {err: 'Error occurred in userController.verifyUser.'},
-            status: 400,
-        });
-    }
-    // Find in database
-    try {
-        console.log('querying database...')
-        const user = await User.findOne( {username: username, password: password} );
-        console.log('user found: ', user);
+        // query to insert a new user
+        const newUserQuery = `
+            INSERT INTO staff(employee_number, position, firstName, lastName, username, email, password)
+            VALUES($1, $2, $3, $4, $5, $6, $7)
+            ON CONFLICT DO NOTHING
+            RETURNING *;
+            `;
         
-        if (user === null) {
-            console.log('no such user found');
-            return res.status(203).redirect('/register');
-        }
-        if (user) {
-            console.log('User logged in...cash money')
-            console.log('storing logged in user information on res.locals.user');
-    
-            res.locals.userInfo = user;
-            
-            console.log('res.locals.userInfo: ', res.locals.userInfo);
-    
-            res.locals.userInfo = user;
-            
-            console.log('res.locals.userInfo: ', res.locals.userInfo);
-            console.log('exiting userController.verifyUser');
-            return next();
-        }
-    } catch(err) {
-        return next({
-            log: `userController.verifyUser: ERROR ${err}`,
-            status: 400,
-            message: {err: 'Error occurred in userController.verifyUser. Check server logs for more details.'}
-        })
-    }
-    return next();
-}
+        // const { rows } = await pool.query(newUserQuery, [employee_number, position, firstName, lastName, username, email, hashedPassword]);
+        // res.locals.user = rows[0];
+        const response = await pool.query(newUserQuery, [employee_number, position, firstName, lastName, username, email, hashedPassword]);
+        console.log('response', response)
 
-// Export userController
-module.exports = userController;
+        if (response.rows.length > 0) {
+            res.locals.user = response.rows[0];
+            return next();
+        } else {
+            return res.status(500).json({ message: "An error occurred", error });
+        }
+      } catch (error) {
+        return res.status(500).json({ message: 'An error occurred', error });
+      }
+};
+
+
+/**
+ * Employee logs in
+ */
+userController.loginEmployee = async (req, res, next) => { 
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(401).json({ message: "Please provide all required fields" });
+    }
+    try { 
+
+        const userQuery = `
+            SELECT *
+            FROM staff
+            WHERE username = $1;
+        `;
+        const response = await pool.query(userQuery, [username]);
+        // const user = response.rows[0];
+
+        if (response.rows.length === 0) {
+            return res.status(401).json('Invalid credentials');
+        }
+
+        if (await bcrypt.compare(password, response.rows[0].password)) {
+            // res.locals.user = user; //may not be used
+            return next();
+        } else {
+            return res.status(401).json('Invalid credentials');
+        }
+
+    } catch (error){ 
+        return res.status(500).json({ message: "An error occurred", error });
+    }
+};
+
+
+/**
+ * Employee updates password
+ */
+userController.updatePassword = async (req, res, next) => { 
+    //may want to change username to something like employee_number as well how to extract the identifier (req.body, params, query?)
+    const { newPassword, oldPassword, username } = req.body;
+
+    try { 
+        const getOldPasswordQuery = `
+            SELECT username, password
+            FROM staff
+            WHERE username = $1;
+        `;
+        const response = await pool.query(getOldPasswordQuery, [username]);
+        const hashedPassword = response.rows[0].password;
+
+        if (await bcrypt.compare(oldPassword, hashedPassword)) {
+            const updatePasswordQuery = `
+                UPDATE staff
+                SET password = $1
+                WHERE username = $2
+            `;
+            const newHashedPassword = await bcrypt.hash(newPassword, saltRounds);
+            const update = await pool.query(updatePasswordQuery, [newHashedPassword, username]);
+            if (update.rowCount === 1) return next()
+        } else {
+            return res.status(500).json({ message: "An error occurred" });
+        }
+    } catch (error) { 
+        return res.status(500).json({ message: "An error occurred", error });
+    }
+};
+
+/**
+ * Admin archieves employee account
+ */
+userController.archiveEmployee = async (req, res, next) => {};
+
