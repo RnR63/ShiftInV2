@@ -1,14 +1,15 @@
 import jwt from 'jsonwebtoken'
-const cookieController = {};
+export const cookieController = {};
 
 cookieController.createCookie = (req, res, next) => { 
-    // 1. access username from res.locals
-    const { token } = res.locals;
+    const { token1 } = res.locals;
+    res.cookie('token', token1, { httpOnly: true, secure: true, sameSite: 'strict' });
 
-    // 2. save the token in res.locals
-    res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' });
-  
+    if (res.locals.token2) {
+        const { token2 } = res.locals;
+        res.cookie('adminToken', token2, { httpOnly: true, secure: true, sameSite: 'strict' });
+    }
+
     return next();
 }
 
-export default cookieController;

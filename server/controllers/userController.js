@@ -5,7 +5,7 @@ const saltRounds = 10;
 export const userController = {};
 
 /**
- * Admin creates employee or another admin account
+ * Need to add that position must be either 'employee' or 'admin'
  */
 userController.createEmployee = async (req, res, next) => { 
     const { username, email, password, firstName, lastName, employee_number, position } = req.body;
@@ -42,9 +42,6 @@ userController.createEmployee = async (req, res, next) => {
 };
 
 
-/**
- * Employee logs in
- */
 userController.loginEmployee = async (req, res, next) => { 
     const { username, password } = req.body;
     if (!username || !password) {
@@ -58,14 +55,14 @@ userController.loginEmployee = async (req, res, next) => {
             WHERE username = $1;
         `;
         const response = await pool.query(userQuery, [username]);
-        // const user = response.rows[0];
+        const user = response.rows[0];
 
         if (response.rows.length === 0) {
             return res.status(401).json('Invalid credentials');
         }
 
         if (await bcrypt.compare(password, response.rows[0].password)) {
-            // res.locals.user = user; //may not be used
+            res.locals.user = user; //may not be used
             return next();
         } else {
             return res.status(401).json('Invalid credentials');
@@ -78,10 +75,9 @@ userController.loginEmployee = async (req, res, next) => {
 
 
 /**
- * Employee updates password
+ * may want to change username to something like employee_number as well how to extract the identifier (req.body, params, query?)
  */
 userController.updatePassword = async (req, res, next) => { 
-    //may want to change username to something like employee_number as well how to extract the identifier (req.body, params, query?)
     const { newPassword, oldPassword, username } = req.body;
 
     try { 
@@ -111,7 +107,7 @@ userController.updatePassword = async (req, res, next) => {
 };
 
 /**
- * Admin archieves employee account
+ * Admin archives employee account
  */
 userController.archiveEmployee = async (req, res, next) => {};
 

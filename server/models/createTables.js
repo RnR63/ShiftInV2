@@ -17,8 +17,9 @@ async function createTables () {
       ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
       date DATE NOT NULL,
       filled BOOLEAN NOT NULL,
-      neededNumEmployees INT NOT NULL,
-      currentNumEmployees INT NOT NULL
+      required_employees INT NOT NULL,
+      current_employees INT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS "schedule"(
@@ -33,10 +34,14 @@ async function createTables () {
       ID INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
       request_type VARCHAR(255) NOT NULL,
       shift_ID INT NOT NULL,
-      droppingstaffID INT NOT NULL,
+      staff_ID INT NOT NULL,
       recievingstaffID INT,
       approved VARCHAR(255),
-      FOREIGN KEY (shift_ID) REFERENCES shifts(ID) ON DELETE CASCADE
+      approved_by INT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (shift_ID) REFERENCES shifts(ID) ON DELETE CASCADE,
+      FOREIGN KEY (staff_ID) REFERENCES staff(ID) ON DELETE CASCADE,
+      FOREIGN KEY (recievingstaffID) REFERENCES staff(ID) ON DELETE CASCADE
     );
   `;
 

@@ -1,20 +1,19 @@
-// import express, path, cookie-parser, cors, and dotenv
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import path, { dirname } from "path";
 import { fileURLToPath } from 'url';
-import { loginRouter } from "../routes/loginRouter.js";
-import { registerRouter } from "../routes/registerRouter.js";
-import { shiftRouter } from '../routes/shiftRouter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // import any possible Routers && Controllers
-// const userController = require('./controllers/userController');
-// const tokenController = require('./controllers/tokenController');
-// const shiftController = require('./controllers/shiftController');
+import { loginRouter } from "../routes/loginRouter.js";
+import { registerRouter } from "../routes/registerRouter.js";
+// import { dashboardRouter } from '../routes/dashboardRouter.js';
+// import { profileRouter } from '../routes/profileRouter.js';
+// import { tokenController } from './controllers/tokenController.js';
+
 
 //create a function to define createServer
 function createServer() {
@@ -25,28 +24,17 @@ function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
+  app.use(cors());
   
   // handle requests for static files
   app.use(express.static(path.join(__dirname, 'build')));
   
-  // // handles loading the initial html page
-  // app.get('/', (req, res) => {
-  //   console.log('Request for INDEX.HTML received');
-  //   const route = path.join(__dirname, '../build/index.html');
-  //   return res.sendFile(route);
-  // });
-  
-  // // handles the bundle.js files in the build folder
-  // app.get('/bundle.js', (req, res) => {
-  //   console.log('Request for bundle.js received')
-  //   const route = path.join(__dirname, '../build/bundle.js');
-  //   return res.sendFile(route);
-  // });
 
   // ----- listening for any endpoints to server to router -------
-  app.use('/shifts', shiftRouter);
-  app.use('/login', loginRouter);
   app.use('/register', registerRouter);
+  app.use('/login', loginRouter);
+  // app.use('/dashboard', dashboardRouter);
+  // app.use('/profile', profileRouter);
 
   // After all routes, catch all
   app.get('*', (req, res) => {
