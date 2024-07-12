@@ -78,28 +78,8 @@ requestController.updateStatus = async (req, res, next) => {
   }
 
   try {
-    let updateStatusQuery;
-    if (requestType !== 'swap') {
-      updateStatusQuery = `
-        UPDATE requests
-        SET status = $1
-        WHERE id = $2
-        RETURNING *;
-      `;
-    } else {
-      updateStatusQuery = `
-        BEGIN;
-        UPDATE requests
-        SET status = $1
-        WHERE id = $2
-        RETURNING *;
-
-        UPDATE schedule
-        
-
-
-      `;
-    }
+    const queryArr = [id, status, requestType, username, recievingstaffID];
+   
  
     const update = await pool.query(updateStatusQuery, [status, id]);
     if (update.rowCount > 0) {

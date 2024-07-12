@@ -1,7 +1,7 @@
 import { Router } from "express";
 const router = Router();
 
-router.post("/create", (req, res) => { });
+// router.post("/create", (req, res) => { });
 
 router.patch("/update", (req, res) => { //likely uses params/query
   res.send("Update settings");

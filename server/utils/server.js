@@ -19,41 +19,40 @@ import { registerRouter } from "../routes/registerRouter.js";
 function createServer() {
   //create variable to invoke express (e.g. save as app)
   const app = express();
-  
+
   // handle parsing request body
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(cors());
-  
+
   // handle requests for static files
-  app.use(express.static(path.join(__dirname, 'build')));
-  
+  app.use(express.static(path.join(__dirname, "build")));
 
   // ----- listening for any endpoints to server to router -------
-  app.use('/register', registerRouter);
-  app.use('/login', loginRouter);
-  // app.use('/dashboard', dashboardRouter);
-  // app.use('/profile', profileRouter);
+  app.use("/register", registerRouter);
+  app.use("/login", loginRouter);
+  // app.use('/dashboard', tokenController.authenticateToken, dashboardRouter);
+  // app.use('/profile', tokenController.authenticateToken, profileRouter);
 
   // After all routes, catch all
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../build/index.html'));
-  })
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../build/index.html"));
+  });
 
   // Global error handler
   app.use((err, req, res, next) => {
     // defaultError object
     const defaultError = {
-      log: 'Express error handler caught unknown middleware error',
+      log: "Express error handler caught unknown middleware error",
       status: 500,
-      message: { error: 'An error occured'}
-    }
+      message: { error: "An error occured" },
+    };
     // combine empty object, defaultError, and (err) prioritizing (err)
     const errorObject = Object.assign({}, defaultError, err);
     return res.status(errorObject.status).json(errorObject.message);
   });
-    
+
   //return app
   return app;
 };

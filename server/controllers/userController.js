@@ -8,6 +8,9 @@ export const userController = {};
  * Need to add that position must be either 'employee' or 'admin'
  */
 userController.createEmployee = async (req, res, next) => { 
+    /** check for admin status, and have the route authenticate admin access */
+    // if (!res.locals.admin) return res.status(401).json({ message: "Unauthorized" });
+
     const { username, email, password, firstName, lastName, employee_number, position } = req.body;
     if (!username || !email || !password || !firstName || !lastName || !employee_number || !position) {
         return res.status(400).json({ message: 'Please provide all required fields' });
@@ -56,13 +59,13 @@ userController.loginEmployee = async (req, res, next) => {
         `;
         const response = await pool.query(userQuery, [username]);
         const user = response.rows[0];
-
+        
         if (response.rows.length === 0) {
             return res.status(401).json('Invalid credentials');
         }
 
-        if (await bcrypt.compare(password, response.rows[0].password)) {
-            res.locals.user = user; //may not be used
+        if (await bcrypt.compare(password, user.password)) {
+            res.locals.user = user; 
             return next();
         } else {
             return res.status(401).json('Invalid credentials');

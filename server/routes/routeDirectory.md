@@ -5,7 +5,7 @@
 
   ### Settings Router
   `/profile/settings`
-  - ✅ (POST) - `/profile/settings/create`
+  - ⏳ (POST) - `/profile/settings/create`
   - ❌ (PATCH) - `/profile/settings/update`
   - ❌ (PUT) - `/profile/settings/archive?id=id`
 
@@ -13,7 +13,7 @@
   `/profile/shifts`
   - ⏳ (GET) - `/profile/shifts/staff`
   - 🪳 (GET) - `/profile/shifts/filter?case=case`
-  -  ⏳ (POST) - `/profile/shift/create`
+  -  ⏳ (POST) - `/profile/shifts/create`
 
   ### Requests Router
 `/profile/requests`

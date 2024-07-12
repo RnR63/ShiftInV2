@@ -41,7 +41,8 @@ async function createTables () {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (shift_ID) REFERENCES shifts(ID) ON DELETE CASCADE,
       FOREIGN KEY (staff_ID) REFERENCES staff(ID) ON DELETE CASCADE,
-      FOREIGN KEY (recievingstaffID) REFERENCES staff(ID) ON DELETE CASCADE
+      FOREIGN KEY (recievingstaffID) REFERENCES staff(ID) ON DELETE CASCADE,
+      FOREIGN KEY (approved_by) REFERENCES staff(ID) ON DELETE CASCADE
     );
   `;
 
